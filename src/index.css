@@ -1,0 +1,367 @@
+@font-face {
+  font-family: rota-bold;
+  src: url(../public/res/Rota-Bold.otf);
+}
+
+@font-face {
+  font-family: rota-semi;
+  src: url(../public/res/Rota-SemiBold.otf);
+}
+
+@font-face {
+  font-family: rota-black;
+  src: url(../public/res/Rota-Black.otf);
+}
+
+:root {
+  --ey: '#F9B61F';
+  --ep: '#4F3084'
+}
+
+/* Colors */
+/* purple 4F3084 */
+/* yellow F9B61F */
+
+html {
+  scroll-behavior: smooth;
+}
+
+
+.filter-scroll input[type="checkbox"] {
+  display: none;
+}
+
+.filter-scroll label {
+  border: 1px solid transparent;
+  padding: 8px 0px;
+  display: block;
+  position: relative;
+  margin: 4px;
+  cursor: pointer;
+}
+
+.filter-scroll label:before {
+  background-color: white;
+  color: white;
+  content: " ";
+  display: block;
+  border-radius: 50%;
+  /* border: 1px solid grey; */
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  width: 25px;
+  height: 25px;
+  text-align: center;
+  line-height: 28px;
+  transition-duration: 0.4s;
+  transform: scale(0);
+}
+
+.filter-scroll label img {
+
+  transition-duration: 0.2s;
+  transform-origin: 50% 50%;
+}
+
+.filter-scroll :checked+label {
+  border-color: #4F3084;
+  border-radius: 100%;
+}
+
+.filter-scroll :checked+label:before {
+  content: "✓";
+  background-color: #4F3084;
+  transform: scale(1);
+}
+
+.filter-scroll :checked+label img {
+  transform: scale(0.95);
+  /* box-shadow: 0 0 5px #333; */
+
+}
+
+.filter-scroll::-webkit-scrollbar {
+  height: 4px;
+  display: none;
+}
+
+.filter-scroll::-webkit-scrollbar-track {
+  background: #f9b71f6e;
+}
+
+.filter-scroll::-webkit-scrollbar-thumb {
+  background: rgb(79, 48, 132);
+  border-radius: 32px;
+}
+
+body {
+  margin: 0;
+  font-family: rota-semi;
+  /* position: relative;   */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+}
+
+
+
+.home {
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
+
+.feedback-screen {
+  background-color: #fff7c0;
+  margin: 0;
+  overflow-y: hidden;
+  overflow-x: hidden;
+  height: 100vh;
+}
+
+/* ---------------------- BG circles -------------------------- */
+.bgImgs {
+
+  /* width: 30vw; */
+  z-index:-1;
+
+}
+
+.floating {
+  animation-name: floating;
+  animation-duration: 6s;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
+  position: absolute;
+}
+
+
+#bcircle-1 {
+  width: clamp(80px, 20%, 120px);
+  left: -50px;
+  top: 12px;
+  animation-delay: 2.5s;
+}
+
+#halo-1 {
+  width: clamp(120px, 24%, 180px);
+  top: 220px;
+  left: -90px;
+  animation-delay: 1.1s;
+}
+
+#halo-2 {
+  width: clamp(120px, 20%, 180px);
+  top: 0;
+  right: -85px;
+  animation-delay: 0.33;
+
+}
+
+#bcircle-2 {
+  width: clamp(80px, 30%, 180px);
+  right: -50px;
+  top: 140vh;
+  animation-delay: 0;
+}
+
+#halo-3 {
+  width: clamp(20px, 12%, 60px);
+  top: 120vh;
+  left: 5vmin;
+  animation-delay: 1.1s;
+}
+
+#halo-4 {
+  width: 100px;
+  top: 480px;
+  left: -60px;
+  animation-delay: 0.8;
+
+}
+
+#bcircle-3 {
+  width: clamp(40px, 20%, 80px);
+  left: 12vw;
+  top: 100vh;
+
+  animation-delay: .8s;
+}
+
+#halo-5 {
+  width: 100px;
+  top: 105vh;
+  right: -70px;
+  animation-delay: 1.3s;
+}
+
+
+
+.user-login,
+.otp-container {
+  background-color: #F9B61F;
+  height: 100vh;
+}
+
+
+/*  -------------- Purple Button ------------------- */
+
+button.MuiButton-root {
+  border-radius: 32px;
+}
+
+button.p-btn {
+  color: white;
+  background-color: #4F3084;
+  text-transform: none;
+  /* margin-top: 1.5em; */
+  font-family: rota-bold;
+  /* min-width: 120px; */
+  /* width: 80%;
+  max-width: 600px; */
+
+}
+
+button.p-btn:disabled {
+  color: white;
+  background-color: #5d5270;
+
+}
+
+button.p-btn:hover {
+  color: white;
+  background-color: #4F3084;
+
+}
+
+button.p-btn:focus {
+  background-color: #4F3084;
+  color: white;
+}
+
+/* ---------- Yellow button -------------------- */
+button.y-btn {
+  color: #4F3084;
+  background-color: #F9B61F;
+  text-transform: none;
+  /* margin-top: 1.5em; */
+  font-family: rota-bold;
+  /* min-width: 120px; */
+  /* width: 80%;
+  max-width: 600px; */
+
+}
+
+button.y-btn:disabled {
+  color: #4F3084;
+  background-color: #F9B61F;
+
+}
+
+button.y-btn:hover {
+  color: #4F3084;
+  background-color: #F9B61F;
+
+}
+
+button.y-btn:focus {
+  background-color: #F9B61F;
+  color: #4F3084;
+}
+
+
+
+label.MuiFormLabel-root {
+  font-family: rota-semi;
+
+}
+
+
+/* --------------- OTP -------------- */
+
+
+.otp-text {
+  margin-bottom: 1em;
+  color: #4F3084;
+  text-align: center;
+}
+
+.otpText {
+  color: red;
+}
+
+.otp-container input {
+  padding: 0.5em;
+  font-size: large;
+  border-radius: 4px;
+  margin: 1em 0.5em;
+  border: none;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+}
+
+.otp-container.wrong input {
+
+  color: red;
+}
+
+.otp-resend {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+/* ---------------- Home ---------------------- */
+
+.home .count {
+  line-height: 1;
+  color: #4F3084;
+  margin: 0;
+}
+
+/* ---------------- Coupon --------------- */
+
+.couponFull .MuiDialog-container>div {
+  background-color: transparent;
+  box-shadow: none;
+}
+
+.couponFull .MuiDialog-container>div>div {
+  padding: 0;
+}
+
+/* ------------------- Coupon Terms -------------- */
+.terms li p,
+.terms li {
+  margin: 0;
+  margin-top: 1px;
+  font-size: 10px;
+}
+
+.terms li p:empty {
+  display: none;
+}
+
+
+.terms ul {
+  padding-inline-start: 20px;
+}
+
+
+/* =========================== ANIMATION =======================  */
+
+
+@keyframes floating {
+  0% {
+    transform: translate(0, 0px);
+  }
+
+  50% {
+    transform: translate(0, 15px);
+  }
+
+  100% {
+    transform: translate(0, -0px);
+  }
+}
