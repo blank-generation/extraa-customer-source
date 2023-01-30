@@ -337,8 +337,10 @@ form .terms {
 /* --------------- OTP -------------- */
 .otp-container {
   display: flex;
+  padding-top:20vh;
   flex-direction: column;
-  justify-content: space-around;
+  /* justify-content: space-around; */
+  gap:2em;
   align-items: center;
   /* height: 60vh; */
 }

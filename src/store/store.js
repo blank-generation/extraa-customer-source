@@ -1,4 +1,4 @@
-import { createSlice, configureStore } from '@reduxjs/toolkit'
+import { createSlice, configureStore, combineReducers } from '@reduxjs/toolkit'
 
 const pageIndexSlice = createSlice({
   name: 'pageIndex',
@@ -16,7 +16,7 @@ const pageIndexSlice = createSlice({
   }
 })
 
-const overLay = createSlice({
+const overLayIndexSlice = createSlice({
   name: 'overLay',
   initialState: {
     overLay: false
@@ -33,11 +33,18 @@ const overLay = createSlice({
 })
 
 export const { incremented, decremented } = pageIndexSlice.actions
-export const {activated, deactivated} = overLay.actions
+export const { activated, deactivated } = overLayIndexSlice.actions
+
+const allReducers = combineReducers({
+  pageIndex: pageIndexSlice.reducer,
+  overLay: overLayIndexSlice.reducer
+})
 
 export const store = configureStore({
   reducer: pageIndexSlice.reducer
+  // overlayReducer: overLayIndexSlice.reducer
 })
+
 
   // Can still subscribe to the store
   // store.subscribe(() => console.log(store.getState()))

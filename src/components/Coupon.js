@@ -11,8 +11,11 @@ import ComeBackLater from "./ComeBackLater";
 import PageNotFound from "./PageNotFound";
 import { useNavigate } from "react-router-dom";
 
+
 function Coupon(props) {
     const navigate = useNavigate();
+  
+
 
     //  COUPON STUFF _----------------------------------------
     const [couponData, SetCouponData] = useState(null);
@@ -77,6 +80,7 @@ function Coupon(props) {
                             SetSuccess(true);
                             if (res.MESSAGE.message === 'Coupon Details') {
                                 // localStorage.setItem('token', res.parameters.access_token);
+                           
                                 navigate('/user-home', { state: { couponNum: res.MESSAGE.parameters.coupon_details.length } });
                                 // let cdata = {};
                                 // cdata.coupounBrandImage = res.parameters.coupon_details.logo;
