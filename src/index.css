@@ -14,8 +14,8 @@
 }
 
 :root {
-  --ey: '#F9B61F';
-  --ep: '#4F3084'
+  --ey: "#F9B61F";
+  --ep: "#4F3084";
 }
 
 /* Colors */
@@ -25,7 +25,6 @@
 html {
   scroll-behavior: smooth;
 }
-
 
 .filter-scroll input[type="checkbox"] {
   display: none;
@@ -59,26 +58,24 @@ html {
 }
 
 .filter-scroll label img {
-
   transition-duration: 0.2s;
   transform-origin: 50% 50%;
 }
 
-.filter-scroll :checked+label {
-  border-color: #4F3084;
+.filter-scroll :checked + label {
+  border-color: #4f3084;
   border-radius: 100%;
 }
 
-.filter-scroll :checked+label:before {
+.filter-scroll :checked + label:before {
   content: "✓";
-  background-color: #4F3084;
+  background-color: #4f3084;
   transform: scale(1);
 }
 
-.filter-scroll :checked+label img {
+.filter-scroll :checked + label img {
   transform: scale(0.95);
   /* box-shadow: 0 0 5px #333; */
-
 }
 
 .filter-scroll::-webkit-scrollbar {
@@ -101,10 +98,7 @@ body {
   /* position: relative;   */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-
 }
-
-
 
 .home {
   overflow-x: hidden;
@@ -117,14 +111,13 @@ body {
   overflow-y: hidden;
   overflow-x: hidden;
   height: 100vh;
+  height: 100svh;
 }
 
 /* ---------------------- BG circles -------------------------- */
 .bgImgs {
-
   /* width: 30vw; */
-  z-index:-1;
-
+  z-index: -1;
 }
 
 .floating {
@@ -134,7 +127,6 @@ body {
   animation-timing-function: ease-in-out;
   position: absolute;
 }
-
 
 #bcircle-1 {
   width: clamp(80px, 20%, 120px);
@@ -154,8 +146,7 @@ body {
   width: clamp(120px, 20%, 180px);
   top: 0;
   right: -85px;
-  animation-delay: 0.33;
-
+  animation-delay: 0.33s;
 }
 
 #bcircle-2 {
@@ -173,11 +164,11 @@ body {
 }
 
 #halo-4 {
-  width: 100px;
+  /* width: 100px;
   top: 480px;
   left: -60px;
-  animation-delay: 0.8;
-
+  animation-delay: 0.8s; */
+  display: none;
 }
 
 #bcircle-3 {
@@ -185,7 +176,7 @@ body {
   left: 12vw;
   top: 100vh;
 
-  animation-delay: .8s;
+  animation-delay: 0.8s;
 }
 
 #halo-5 {
@@ -195,14 +186,11 @@ body {
   animation-delay: 1.3s;
 }
 
-
-
 .user-login,
 .otp-container {
-  background-color: #F9B61F;
+  /* background-color: #F9B61F; */
   height: 100vh;
 }
-
 
 /*  -------------- Purple Button ------------------- */
 
@@ -212,77 +200,66 @@ button.MuiButton-root {
 
 button.p-btn {
   color: white;
-  background-color: #4F3084;
+  background-color: #4f3084;
   text-transform: none;
   /* margin-top: 1.5em; */
   font-family: rota-bold;
   /* min-width: 120px; */
   /* width: 80%;
   max-width: 600px; */
-
 }
 
 button.p-btn:disabled {
   color: white;
   background-color: #5d5270;
-
 }
 
 button.p-btn:hover {
   color: white;
-  background-color: #4F3084;
-
+  background-color: #4f3084;
 }
 
 button.p-btn:focus {
-  background-color: #4F3084;
+  background-color: #4f3084;
   color: white;
 }
 
 /* ---------- Yellow button -------------------- */
 button.y-btn {
-  color: #4F3084;
-  background-color: #F9B61F;
+  color: #4f3084;
+  background-color: #f9b61f;
   text-transform: none;
   /* margin-top: 1.5em; */
   font-family: rota-bold;
   /* min-width: 120px; */
   /* width: 80%;
   max-width: 600px; */
-
 }
 
 button.y-btn:disabled {
-  color: #4F3084;
-  background-color: #F9B61F;
-
+  color: #4f3084;
+  background-color: #f9b61f;
 }
 
 button.y-btn:hover {
-  color: #4F3084;
-  background-color: #F9B61F;
-
+  color: #4f3084;
+  background-color: #f9b61f;
 }
 
 button.y-btn:focus {
-  background-color: #F9B61F;
-  color: #4F3084;
+  background-color: #f9b61f;
+  color: #4f3084;
 }
-
-
 
 label.MuiFormLabel-root {
   font-family: rota-semi;
-
 }
-
 
 /* --------------- OTP -------------- */
 
-
 .otp-text {
   margin-bottom: 1em;
-  color: #4F3084;
+  color: #4f3084;
   text-align: center;
 }
 
@@ -300,7 +277,6 @@ label.MuiFormLabel-root {
 }
 
 .otp-container.wrong input {
-
   color: red;
 }
 
@@ -316,18 +292,18 @@ label.MuiFormLabel-root {
 
 .home .count {
   line-height: 1;
-  color: #4F3084;
+  color: #4f3084;
   margin: 0;
 }
 
 /* ---------------- Coupon --------------- */
 
-.couponFull .MuiDialog-container>div {
+.couponFull .MuiDialog-container > div {
   background-color: transparent;
   box-shadow: none;
 }
 
-.couponFull .MuiDialog-container>div>div {
+.couponFull .MuiDialog-container > div > div {
   padding: 0;
 }
 
@@ -343,14 +319,11 @@ label.MuiFormLabel-root {
   display: none;
 }
 
-
 .terms ul {
   padding-inline-start: 20px;
 }
 
-
 /* =========================== ANIMATION =======================  */
-
 
 @keyframes floating {
   0% {

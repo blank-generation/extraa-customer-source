@@ -38,7 +38,7 @@ export function Profile() {
   };
   const handleLogout = () => {
     localStorage.clear();
-    navigate("//");
+    navigate("/");
   };
 
   const handleEmailChange = (event) => {
@@ -118,15 +118,19 @@ export function Profile() {
 
   useEffect(() => {
     if (localStorage.getItem("token")) {
-      axios.get(pathURL + "/get-user-profile", config).then((response) => {
-        console.log(response.data.Data);
-        let userData = response.data.Data;
-        SetUserProf(userData);
-        localStorage.setItem("user_name", userData.user_name);
-        if (response.data.Data.preferences) {
-          SetPreferences(response.data.Data.preferences);
-        }
-      });
+      if (localStorage.getItem("user")) {
+        SetUserProf(JSON.parse(localStorage.getItem("user")));
+      }
+
+      // axios.get(pathURL + "/get-user-profile", config).then((response) => {
+      //   console.log(response.data.Data);
+      //   let userData = response.data.Data;
+      //   SetUserProf(userData);
+      //   localStorage.setItem("user_name", userData.user_name);
+      //   if (response.data.Data.preferences) {
+      //     SetPreferences(response.data.Data.preferences);
+      //   }
+      // });
     } else {
       navigate("/");
     }
@@ -136,7 +140,7 @@ export function Profile() {
     {
       img: "./assets/cwon.png",
       text: "Coupons won",
-      num: localStorage.getItem("total_coupons").toLocaleString("en-US", {
+      num: localStorage.getItem("coupons_won")?.toLocaleString("en-US", {
         minimumIntegerDigits: 2,
         useGrouping: false,
       }),
@@ -144,7 +148,7 @@ export function Profile() {
     {
       img: "./assets/fbgiven.png",
       text: "Feedbacks Given",
-      num: localStorage.getItem("total_feedbacks").toLocaleString("en-US", {
+      num: localStorage.getItem("feedback_count")?.toLocaleString("en-US", {
         minimumIntegerDigits: 2,
         useGrouping: false,
       }),
@@ -155,29 +159,34 @@ export function Profile() {
     <div>
       <TopAppBar />
       {/* ---------------------------  Avatar ----------------------------------*/}
-      {localStorage.getItem("user_name") && (
-        <Stack sx={{ height: 256 }} alignItems="center" justifyContent="center">
-          <Avatar sx={{ width: 64, height: 64, background: "#4F3084" }}>
-            {" "}
-            {localStorage.getItem("user_name").slice(0, 1)}
-          </Avatar>
-          <h4 style={{ fontSize: "1.4em", margin: "0.4em" }}>
-            {" "}
-            {localStorage.getItem("user_name")}
-          </h4>
-          <Button
-            className="y-btn"
-            startIcon={<Logout />}
-            onClick={handleLogout}
+      <Stack sx={{ height: 256 }} alignItems="center" justifyContent="center">
+        {userProf?.name && (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              flexDirection: "column",
+            }}
           >
-            {" "}
-            Logout{" "}
-          </Button>
-        </Stack>
-      )}
+            <Avatar sx={{ width: 64, height: 64, background: "#4F3084" }}>
+              {" "}
+              {userProf?.name.slice(0, 1)}
+            </Avatar>
+            <h4 style={{ fontSize: "1.4em", margin: "0.4em" }}>
+              {" "}
+              {userProf?.name}
+            </h4>
+          </div>
+        )}
+        <Button className="y-btn" startIcon={<Logout />} onClick={handleLogout}>
+          {" "}
+          Logout{" "}
+        </Button>
+      </Stack>
+
       <Divider />
       {/* ---------------------------------------Stats --------------------------------------- */}
-
       <Stack
         direction="row"
         justifyContent="center"
@@ -208,9 +217,7 @@ export function Profile() {
           </Stack>
         ))}
       </Stack>
-
       {/* ---------------------------------------Profile --------------------------------------- */}
-
       <Stack direction="row" justifyContent="center">
         {userProf.phone_number && (
           <Stack gap={4} p={4} sx={{ width: 800 }}>
@@ -234,7 +241,7 @@ export function Profile() {
                     Save
                   </Button>
                 )}
-                <Button
+                {/* <Button
                   onClick={handleEdit}
                   className="p-btn"
                   size="small"
@@ -243,7 +250,7 @@ export function Profile() {
                 >
                   {" "}
                   Edit
-                </Button>
+                </Button> */}
               </div>
             </Stack>
 
@@ -259,7 +266,7 @@ export function Profile() {
 
             <TextField
               label="Name"
-              defaultValue={userProf.user_name}
+              defaultValue={userProf.name}
               onChange={handleNameChange}
               focused={editable}
               InputProps={{
@@ -331,7 +338,7 @@ export function Profile() {
       </Stack>
       {/* ------------------------------------------- Preferences ----------------------------------------------- */}
       <Divider />
-      <Stack
+      {/* <Stack
         direction="row"
         justifyContent="center"
         sx={{ background: "#F8F2FF" }}
@@ -383,7 +390,7 @@ export function Profile() {
                       paddingLeft: 8,
                     }}
                   >
-                    {ind.industry_name.toLowerCase().replace("and", "&")}
+                    {ind?.industry_name.toLowerCase().replace("and", "&")}
                   </p>
                 </div>
               ))}
@@ -399,7 +406,7 @@ export function Profile() {
             </div>
           )}
         </Stack>
-      </Stack>
+      </Stack> */}
     </div>
   );
 }

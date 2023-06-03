@@ -3,26 +3,21 @@ import {
   Box,
   CardContent,
   Divider,
-  CardMedia,
   Dialog,
   DialogActions,
   DialogContent,
   Button,
   Stack,
-  DialogTitle,
   IconButton,
 } from "@mui/material";
+import Barcode from "react-barcode";
 import { useState, useCallback } from "react";
-import {
-  ChevronRight,
-  Close,
-  LocationCity,
-  LocationOn,
-} from "@mui/icons-material";
+import { ChevronRight, Close, LocationOn } from "@mui/icons-material";
 import html2canvas from "html2canvas";
 import downloadjs from "downloadjs";
-import { Download, Check } from "@mui/icons-material";
+import { Download } from "@mui/icons-material";
 import parse from "html-react-parser";
+import moment from "moment";
 
 export function CouponCard(props) {
   const [open, setOpen] = useState(props.dialogOpen);
@@ -34,6 +29,22 @@ export function CouponCard(props) {
   const handleClose = () => {
     setOpen(false);
   };
+
+  function validURL(string) {
+    let url;
+    try {
+      url = new URL(string);
+    } catch (_) {
+      return false;
+    }
+    return url.protocol === "http:" || url.protocol === "https:";
+  }
+
+  // function toHex(d) {
+  //   return ("0" + Number(d).toString(16)).slice(-2).toUpperCase();
+  // }
+
+  const c_id = parseInt(props.coupon_id);
 
   // ---------------------------------------------- Download Coupon -------------------------------------------
   const handleDownloadCoupon = useCallback(async () => {
@@ -51,8 +62,10 @@ export function CouponCard(props) {
     <div className="coupon">
       <Card
         sx={{ borderRadius: 8, width: 300, position: "relative" }}
-        elevation={4}
-        onClick={handleClickOpen}
+        elevation={props.validity && moment(props.validity).isAfter() ? 4 : 1}
+        onClick={
+          props.validity && moment(props.validity).isAfter() && handleClickOpen
+        }
       >
         {/* <Box sx={{ color: 'white', paddingLeft: 2, height: 32, textTransform: 'lowercase' }}>
                         <h2 style={{ fontSize: '1.2em', textTransform: 'capitalize' }}> {props.industry_name}</h2>
@@ -61,7 +74,10 @@ export function CouponCard(props) {
         <Box
           sx={{
             display: "flex",
-            background: "#ffffba",
+            background:
+              props.validity && moment(props.validity).isAfter()
+                ? "#ffffba"
+                : "#eeeeee",
             alignItems: "start",
             height: "100%",
           }}
@@ -70,13 +86,19 @@ export function CouponCard(props) {
 
           <Stack
             sx={{
-              background: props.coupon_color,
+              background:
+                props.validity && moment(props.validity).isAfter()
+                  ? props.coupon_color
+                  : "grey",
               color: "white",
               height: "100%",
             }}
             alignItems="center"
             justifyContent="center"
           >
+            {/* <p style={{ marginBottom: 0 }}>
+              #{c_id.toString(16).padStart(6, "0").toUpperCase()}
+            </p> */}
             {/* -------------------------- Brand Logo ------------------------------------- */}
             <Box
               sx={{
@@ -102,6 +124,10 @@ export function CouponCard(props) {
                     height: "100%",
                     objectFit: "contain",
                     padding: 4,
+                    filter:
+                      props.validity && moment(props.validity).isAfter()
+                        ? ""
+                        : "grayscale(100%)",
                   }}
                 />
               ) : (
@@ -145,6 +171,7 @@ export function CouponCard(props) {
             </h4>
 
             {/* ------------------------------- Coupon Code -------------------------------- */}
+
             <p style={{}}>
               {/* <span style={{ fontSize: '0.5em' }}>Code: </span>  */}
               <span
@@ -156,12 +183,12 @@ export function CouponCard(props) {
                   padding: "6px 8px",
                   borderRadius: 24,
                   marginLeft: "8px",
-                  marginRight: "8px",
                 }}
               >
                 {props.code}
               </span>
             </p>
+
             {/* <img src={props.industry_icon} alt={props.industry_name} style={{ width: 32, height: 32 }} /> */}
           </Stack>
 
@@ -204,10 +231,16 @@ export function CouponCard(props) {
             </p>
             {/* ----------------------- Validity --------------------------------- */}
             <p style={{ marginTop: 8, fontSize: "0.8em" }}>
-              <span style={{ fontSize: "0.9em", fontFamily: "rota-black" }}>
-                valid till:{" "}
-              </span>
-              {props.validity}
+              {props.validity && moment(props.validity).isAfter() ? (
+                <span style={{ fontSize: "0.9em", fontFamily: "rota-black" }}>
+                  valid till: {moment(props.validity).format("DD-MM-YYYY")}
+                </span>
+              ) : (
+                <span style={{ background: "red", padding: 8, color: "white" }}>
+                  {" "}
+                  Expired
+                </span>
+              )}
             </p>
             <Divider />
             {/* ----------------------- Powered --------------------------------- */}
@@ -249,7 +282,9 @@ export function CouponCard(props) {
               right: 10,
             }}
           >
-            <ChevronRight color="primary" />
+            {props.validity && moment(props.validity).isAfter() && (
+              <ChevronRight color="primary" />
+            )}
           </div>
         </Box>
       </Card>
@@ -427,7 +462,8 @@ export function CouponCard(props) {
                   <span style={{ fontSize: "0.9em", fontFamily: "rota-black" }}>
                     valid till:{" "}
                   </span>
-                  {props.validity}
+                  {props.validity &&
+                    moment(props.validity).format("DD-MM-YYYY")}
                 </p>
                 <Divider />
                 {/* ----------------------- Powered --------------------------------- */}
@@ -506,13 +542,44 @@ export function CouponCard(props) {
                 />
               )}
             </Box>
-            <Divider sx={{ borderWidth: 2, background: props.coupon_color }} />
+            <Divider
+              sx={{
+                borderWidth: 2,
+                background: props.coupon_color,
+              }}
+            />
+            {/* <p
+              style={{
+                marginBottom: 0,
+                fontSize: "0.8em",
+                marginRight: 24,
+                marginTop: 14,
+                textAlign: "right",
+              }}
+            >
+              uid #{c_id.toString(16).padStart(6, "0").toUpperCase()}
+            </p> */}
+            <Stack
+              sx={{
+                justifyContent: "center",
+                alignItems: "center",
+                marginTop: 2,
+              }}
+            >
+              {" "}
+              <Barcode
+                value={"#" + c_id.toString(16).padStart(6, "0").toUpperCase()}
+                height={36}
+                background="#FFFFBA"
+              />
+            </Stack>
+
             <Box sx={{ display: "flex" }}>
               <Box sx={{ display: "flex", flexDirection: "column" }}>
                 <CardContent sx={{ flex: "1 0 auto" }} className="terms">
                   {parse(props.terms.replace("<p>&nbsp;</p>", ""))}
 
-                  {/*-----------------  location --------------------------------- */}
+                  {/*----------------------  location --------------------------------- */}
 
                   {props.location && (
                     <div style={{ marginLeft: 12 }}>
@@ -523,22 +590,33 @@ export function CouponCard(props) {
                           alignItems: "center",
                         }}
                       >
-                        {" "}
                         <LocationOn
                           sx={{ width: 16, height: 16 }}
                           color="primary"
                         />
                         Locations:
                       </h4>
-                      <p
-                        style={{
-                          marginTop: 0,
-                          fontSize: ".8em",
-                          marginLeft: 18,
-                        }}
-                      >
-                        {" "}
-                        {props.location}{" "}
+                      <p style={{ wordBreak: "break-all", marginTop: 0 }}>
+                        {validURL(props.location) ? (
+                          <Button className="y-btn" endIcon={<ChevronRight />}>
+                            <a
+                              style={{ paddingLeft: 12 }}
+                              href={props.location}
+                            >
+                              {" "}
+                              Redeem it here
+                            </a>
+                          </Button>
+                        ) : (
+                          <span
+                            style={{
+                              marginTop: 0,
+                              fontSize: ".8em",
+                            }}
+                          >
+                            {props.location}
+                          </span>
+                        )}
                       </p>
                     </div>
                   )}

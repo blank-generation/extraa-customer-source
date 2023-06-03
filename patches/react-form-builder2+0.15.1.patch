@@ -1,0 +1,127 @@
+diff --git a/node_modules/react-form-builder2/lib/form-elements/date-picker.js b/node_modules/react-form-builder2/lib/form-elements/date-picker.js
+index ada5be1..f28a20a 100644
+--- a/node_modules/react-form-builder2/lib/form-elements/date-picker.js
++++ b/node_modules/react-form-builder2/lib/form-elements/date-picker.js
+@@ -37,7 +37,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
+ 
+ function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = (0, _getPrototypeOf2["default"])(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = (0, _getPrototypeOf2["default"])(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return (0, _possibleConstructorReturn2["default"])(this, result); }; }
+ 
+-function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
++function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () { })); return true; } catch (e) { return false; } }
+ 
+ var DatePicker = /*#__PURE__*/function (_React$Component) {
+   (0, _inherits2["default"])(DatePicker, _React$Component);
+@@ -55,7 +55,8 @@ var DatePicker = /*#__PURE__*/function (_React$Component) {
+ 
+       if (dt && dt.target) {
+         placeholder = dt && dt.target && dt.target.value === '' ? formatMask.toLowerCase() : '';
+-        var formattedDate = dt.target.value ? (0, _dateFns.format)(dt.target.value, formatMask) : '';
++        var formattedDate = dt.target.value ? (0, _dateFns.format)(_dateFns.parseISO(dt.target.value), formatMask) : '';
++
+ 
+         _this.setState({
+           value: formattedDate,
+@@ -73,7 +74,7 @@ var DatePicker = /*#__PURE__*/function (_React$Component) {
+     _this.inputField = /*#__PURE__*/_react["default"].createRef();
+ 
+     var _DatePicker$updateFor = DatePicker.updateFormat(props, null),
+-        _formatMask = _DatePicker$updateFor.formatMask;
++      _formatMask = _DatePicker$updateFor.formatMask;
+ 
+     _this.state = DatePicker.updateDateTime(props, {
+       formatMask: _formatMask
+@@ -86,9 +87,9 @@ var DatePicker = /*#__PURE__*/function (_React$Component) {
+     key: "render",
+     value: function render() {
+       var _this$props$data = this.props.data,
+-          showTimeSelect = _this$props$data.showTimeSelect,
+-          showTimeSelectOnly = _this$props$data.showTimeSelectOnly,
+-          showTimeInput = _this$props$data.showTimeInput;
++        showTimeSelect = _this$props$data.showTimeSelect,
++        showTimeSelectOnly = _this$props$data.showTimeSelectOnly,
++        showTimeInput = _this$props$data.showTimeInput;
+       var props = {};
+       props.type = 'date';
+       props.className = 'form-control';
+@@ -121,39 +122,42 @@ var DatePicker = /*#__PURE__*/function (_React$Component) {
+         placeholder: this.state.placeholder,
+         value: this.state.value,
+         className: "form-control"
+-      }), iOS && !readOnly && /*#__PURE__*/_react["default"].createElement("input", {
+-        type: "date",
+-        name: props.name,
+-        ref: props.ref,
+-        onChange: this.handleChange,
+-        dateFormat: "MM/DD/YYYY",
+-        placeholder: this.state.placeholder,
+-        value: this.state.value,
+-        className: "form-control"
+-      }), !iOS && !readOnly && /*#__PURE__*/_react["default"].createElement(_reactDatepicker["default"], {
+-        name: props.name,
+-        ref: props.ref,
+-        onChange: this.handleChange,
+-        selected: this.state.internalValue,
+-        todayButton: 'Today',
+-        className: "form-control",
+-        isClearable: true,
+-        showTimeSelect: showTimeSelect,
+-        showTimeSelectOnly: showTimeSelectOnly,
+-        showTimeInput: showTimeInput,
+-        dateFormat: this.state.formatMask,
+-        portalId: "root-portal",
+-        autoComplete: "off",
+-        placeholderText: placeholderText
+-      }))));
++      }),
++        !readOnly && /*#__PURE__*/_react["default"].createElement("input", {
++          type: "date",
++          name: props.name,
++          ref: props.ref,
++          onChange: this.handleChange,
++          dateFormat: "DD/MM/YYYY",
++          placeholder: this.state.placeholder,
++          // value: this.state.value,
++          className: "form-control"
++        }),
++        // !readOnly && /*#__PURE__*/_react["default"].createElement(_reactDatepicker["default"], {
++        //   name: props.name,
++        //   ref: props.ref,
++        //   onChange: this.handleChange,
++        //   selected: this.state.internalValue,
++        //   todayButton: 'Today',
++        //   className: "form-control",
++        //   isClearable: true,
++        //   showTimeSelect: showTimeSelect,
++        //   showTimeSelectOnly: showTimeSelectOnly,
++        //   showTimeInput: showTimeInput,
++        //   dateFormat: this.state.formatMask,
++        //   portalId: "root-portal",
++        //   autoComplete: "off",
++        //   placeholderText: placeholderText
++        // })
++      )));
+     }
+   }], [{
+     key: "updateFormat",
+     value: function updateFormat(props, oldFormatMask) {
+       var _props$data = props.data,
+-          showTimeSelect = _props$data.showTimeSelect,
+-          showTimeSelectOnly = _props$data.showTimeSelectOnly,
+-          showTimeInput = _props$data.showTimeInput;
++        showTimeSelect = _props$data.showTimeSelect,
++        showTimeSelectOnly = _props$data.showTimeSelectOnly,
++        showTimeInput = _props$data.showTimeInput;
+       var dateFormat = showTimeSelect && showTimeSelectOnly ? '' : props.data.dateFormat;
+       var timeFormat = showTimeSelect || showTimeInput ? props.data.timeFormat : '';
+       var formatMask = "".concat(dateFormat, " ").concat(timeFormat).trim();
+@@ -202,8 +206,8 @@ var DatePicker = /*#__PURE__*/function (_React$Component) {
+     key: "getDerivedStateFromProps",
+     value: function getDerivedStateFromProps(props, state) {
+       var _DatePicker$updateFor2 = DatePicker.updateFormat(props, state.formatMask),
+-          updated = _DatePicker$updateFor2.updated,
+-          formatMask = _DatePicker$updateFor2.formatMask;
++        updated = _DatePicker$updateFor2.updated,
++        formatMask = _DatePicker$updateFor2.formatMask;
+ 
+       if (props.data.defaultToday !== state.defaultToday || updated) {
+         var newState = DatePicker.updateDateTime(props, state, formatMask);

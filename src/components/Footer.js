@@ -14,7 +14,7 @@ function Footer(props) {
                 <div>
 
                     <div className="powered">powered by
-                        <img src="./assets/extraa_logo.png" alt="" />
+                        <img src="../assets/extraa_logo.png" alt="" />
                     </div>
                     {props.Counter ?
 

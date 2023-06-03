@@ -1,12 +1,16 @@
-
-
 .nocoupons {
-  padding:2em;
+  padding: 2em;
+}
+
+@media only screen and (max-height: 500px) {
+  .footer {
+    display: none;
+  }
 }
 .powered {
   font-family: rota-black;
   text-align: center;
-  color: #4F3084;
+  color: #4f3084;
   margin-bottom: 0.8em;
 }
 
@@ -14,22 +18,29 @@
   width: 72px;
   vertical-align: middle;
   padding-left: 12px;
-
 }
 
 .splash {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  /* justify-content: center; */
   align-items: center;
-  height: 55vh;
-
+  padding: 0 24px;
+  /* height: 100vh; */
+  /* height: 100svh; */
 }
-
+.splash-logo img {
+  max-width: 200px;
+  max-height: 180px;
+}
+.splash-title h2 {
+  font-size: xx-large;
+  color: #4f3084;
+}
 .splash-content {
   text-align: center;
-  font-size: larger;
-  color: #4F3084;
+  font-size: medium;
+  color: #4f3084;
 }
 
 .gift-container {
@@ -38,7 +49,6 @@
   justify-content: center;
   margin-bottom: 2em;
 }
-
 
 .logo-header {
   display: flex;
@@ -51,12 +61,11 @@
   /* min-width: 100vw; */
   /* border-bottom-left-radius: 64em;
   border-bottom-right-radius: 64em; */
-
 }
 
 .logo-header #brand-logo {
   max-width: 180px;
-  max-height: 100px
+  max-height: 100px;
 }
 
 .splash .btn-container {
@@ -66,39 +75,35 @@
 }
 
 .splash button {
-  color: #4F3084;
-  background-color: #F9B61F;
+  /* color: #4f3084;
+  background-color: #f9b61f;
   text-transform: none;
   margin-top: 1.5em;
   font-family: rota-black;
   width: 60%;
   max-width: 600px;
-  border-radius: 32px;
+  border-radius: 32px; */
 }
 
 .splash button:hover {
-  color: #4F3084;
-  background-color: #F9B61F;
-
+  color: #4f3084;
+  background-color: #f9b61f;
 }
 
 .splash button:focus {
-  background-color: #4F3084;
+  background-color: #4f3084;
   color: white;
 }
 
-
-
 /* --------------Questions and Options--------------- */
-
 
 .qText {
   color: white;
-  background-color: #4F3084;
+  background-color: #4f3084;
   font-size: larger;
   font-family: rota-semi;
   text-align: center;
-  text-transform:none;
+  text-transform: none;
   /* margin-left: 1em;
   margin-right: 1em; */
   /* padding-left: 1em;
@@ -119,8 +124,8 @@
 }
 
 .option::before {
-  background-color: #F9B61F;
-  color: #4F3084;
+  background-color: #f9b61f;
+  color: #4f3084;
   padding: 0 0.55em;
   border-radius: 100%;
   position: absolute;
@@ -131,7 +136,7 @@
 }
 
 .oplist button {
-  color: #4F3084;
+  color: #4f3084;
   /* color: #00030A; */
   background-color: white;
   text-transform: none;
@@ -143,13 +148,12 @@
 }
 
 .oplist button:hover {
-  color: #4F3084;
+  color: #4f3084;
   background-color: white;
-
 }
 
 .oplist button:focus {
-  background-color: #4F3084;
+  background-color: #4f3084;
   color: white;
 }
 
@@ -163,7 +167,6 @@
   content: none;
 }
 
-
 .scale5 {
   display: flex;
   flex-wrap: wrap;
@@ -175,30 +178,46 @@
   justify-content: center;
 }
 
-
-
-.scale5  button {
+.scale5 button {
   border-radius: 8px;
   min-width: 8px !important;
   flex-grow: 0;
   margin-right: 1rem;
-  width:10%;
+  width: 10%;
   max-width: 32px;
-
 }
-
 
 /* -------------------Five star Rating -------------------- */
 
 .fiveStar {
   display: flex;
   width: 100%;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
+  gap: 3em;
   height: 55vh;
+  transition: 0.8s;
 }
 
+.fiveStar button {
+  color: #4f3084;
+  background-color: #f9b61f;
+  text-transform: none;
+  margin-top: 1.5em;
+  font-family: rota-black;
+  width: 200px;
+  max-width: 600px;
+  border-radius: 32px;
+}
 
+/* --------------- Short Answer -------------- */
+
+.short {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
 /* ------------User Detials form------------- */
 
@@ -214,25 +233,24 @@
   width: 80vw;
 }
 
-.user-details button {
-  color: #4F3084;
-  background-color: #F9B61F;
+.user-details button.submit {
+  color: #4f3084;
+  background-color: #f9b61f;
   text-transform: none;
   margin-top: 1.5em;
   font-family: rota-black;
-  width: 80%;
-  max-width: 600px;
+  width: 50%;
+  max-width: 200px;
   border-radius: 32px;
 }
 
-.user-details button:hover {
-  color: #4F3084;
-  background-color: #F9B61F;
-
+.user-details button.submit:hover {
+  color: #4f3084;
+  background-color: #f9b61f;
 }
 
-.user-details button:focus {
-  background-color: #4F3084;
+.user-details button.submit:focus {
+  background-color: #4f3084;
   color: white;
 }
 
@@ -240,15 +258,16 @@
   font-family: rota-semi;
 }
 
-.age-container, .gender-container {
+.age-container,
+.gender-container {
   margin-top: 2em;
   color: grey;
   font-family: rota-bold;
   width: 80%;
-  max-width:300px;
+  max-width: 300px;
 }
 
-.gender-selector{
+.gender-selector {
   display: flex;
   /* justify-content: space-around; */
   gap: 8%;
@@ -257,21 +276,18 @@
   margin-top: 1em;
 }
 .age-selector {
-
   width: 100%;
   margin-top: 1em;
   display: flex;
   justify-content: space-between;
   align-items: center;
-
 }
 
 .selecotr-item {
-  flex-basis: calc(70% / 3.5);
+  flex-basis: calc(70% / 4.5);
   height: 100%;
   display: flex;
   justify-content: center;
-
 }
 
 .selector-item_radio {
@@ -285,25 +301,25 @@
   width: 100%;
   text-align: center;
   border-radius: 32px;
-  box-shadow: 0 0 4px rgba(0, 0, 0, .2), 0 2px 2px rgba(0, 0, 0, .2);
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.2), 0 2px 2px rgba(0, 0, 0, 0.2);
   align-items: center;
   padding: 0.3em 0.5em;
   background-color: #ffffff;
-  color: #4F3084;
-  transition-duration: .25s;
+  color: #4f3084;
+  transition-duration: 0.25s;
   transition-property: transform, color, box-shadow;
   transform: none;
 }
-.selector-item_label.gender-label{
+.selector-item_label.gender-label {
   padding: 0.3em 2.5em;
 }
-.selector-item_radio:checked+.selector-item_label.gender-label{
+.selector-item_radio:checked + .selector-item_label.gender-label {
   padding: 0.3em 2.5em;
 }
-.selector-item_radio:checked+.selector-item_label {
-  background-color: #4F3084;
+.selector-item_radio:checked + .selector-item_label {
+  background-color: #4f3084;
   color: #ffffff;
-  box-shadow: 0 0 4px rgba(0, 0, 0, .5), 0 2px 4px rgba(0, 0, 0, .5);
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.5), 0 2px 4px rgba(0, 0, 0, 0.5);
   transform: translateY(-2px);
   padding: 0.4em 0.5em;
 }
@@ -322,12 +338,11 @@ form .terms {
   bottom: -40%;
   left: 50%;
   transform: translate(-50%, 0%); */
-
 }
 
 .bottom_coupon {
   position: relative;
-  top:12vh;
+  top: 12vh;
   left: 50%;
   /* top: 68vh; */
   width: 0;
@@ -337,23 +352,30 @@ form .terms {
 /* --------------- OTP -------------- */
 .otp-container {
   display: flex;
-  padding-top:20vh;
+  padding-top: 10vh;
   flex-direction: column;
   /* justify-content: space-around; */
-  gap:2em;
+  gap: 2em;
   align-items: center;
   /* height: 60vh; */
+}
+.otp-cont {
+  display: flex;
+  flex-direction: column;
+  /* gap: 2em; */
+  align-items: center;
 }
 
 .otp-text {
   margin-bottom: 1em;
-  color: #4F3084;
+  color: #4f3084;
   text-align: center;
 }
-.otpText{
-  color:red;
+.otpText {
+  color: red;
 }
-.otp-container input {
+.otp-container input,
+.otp-cont input {
   padding: 0.5em;
   font-size: large;
   border-radius: 4px;
@@ -362,11 +384,14 @@ form .terms {
   box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
 }
 .otp-container.wrong input {
-
-color:red;
+  color: red;
 }
 
-.otp-resend{
+.otp-cont.wrong input {
+  color: red;
+}
+
+.otp-resend {
   display: flex;
   width: 100%;
   align-items: center;
@@ -374,32 +399,33 @@ color:red;
   flex-direction: column;
 }
 
-
-.otp-container button {
+.otp-container button,
+.otp-cont button {
   font-family: rota-semi;
   border-radius: 32px;
   width: 70%;
   margin-top: 1em;
 }
 
-.otp-container input:focus-visible {
-  outline-color: #4F3084;
+.otp-container input:focus-visible,
+.otp-cont input:focus-visible {
+  outline-color: #4f3084;
 }
 
 /* ------------------Coupon------------ */
 
-.nocoupons{
-  height:70vh;
+.nocoupons {
+  height: 70vh;
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
 }
 
-.coupon-screen{
+.coupon-screen {
   width: 100%;
-display: flex;
-justify-content: center;
+  display: flex;
+  justify-content: center;
 }
 
 .coupon {
@@ -439,25 +465,24 @@ justify-content: center;
 
 .coupon-row1 {
   display: flex;
-  color: #4F3084;
+  color: #4f3084;
   text-align: center;
   justify-content: space-around;
   width: 100%;
   align-items: center;
   margin-bottom: -2em;
   line-height: 1;
-
 }
 
 .coupon-row2 {
-  color: #00030A;
+  color: #00030a;
   display: flex;
   justify-content: center;
   transform: translateY(2em);
 }
 
 .code-container {
-  background-color: #FCFAFF;
+  background-color: #fcfaff;
   border-radius: 12px;
   display: flex;
   width: 80%;
@@ -474,52 +499,48 @@ justify-content: center;
 
 .coupon-code {
   font-family: rota-black;
-  line-height: 0.0;
+  line-height: 0;
   margin-top: 0;
   font-size: 1.6em;
   /* color: #F9B61F; */
   border-bottom: gray 2px dotted;
-  padding-bottom: .6em;
-  margin-block-end: .4em;
+  padding-bottom: 0.6em;
+  margin-block-end: 0.4em;
 }
 
 .coupon-code-container {
-
   width: 100%;
   text-align: center;
   border-radius: 12px;
-
 }
 
 .coupon-text-container {
-  color: #00030A;
+  color: #00030a;
   padding-top: 3em;
   padding-bottom: 2em;
   display: flex;
   justify-content: center;
 }
 
-.coupon-text button{
+.coupon-text button {
   text-decoration: underline;
   font-family: rota-bold;
   font-size: medium;
   text-transform: none;
- 
 }
 
-.terms-btn{
+.terms-btn {
   width: 100%;
   display: inline-flex;
   justify-content: center;
 }
 
 .coupon-text {
-  background-color: #FCFAFF;
+  background-color: #fcfaff;
   padding: 1em;
   width: 80%;
   border-radius: 12px;
 }
-
 
 .coupon-powered {
   text-align: center;
@@ -531,15 +552,11 @@ justify-content: center;
   vertical-align: middle;
 }
 
-
 .card {
-
-
   perspective: 500px;
 }
 
 .coupon-content {
-
   transition: transform 1s;
   transform-style: preserve-3d;
 }
@@ -561,11 +578,9 @@ justify-content: center;
   top: 0;
 }
 
-
-
 .coupon-terms {
   background-color: white;
-  color: #00030A;
+  color: #00030a;
   text-align: center;
   width: 100%;
   border-radius: 12px;
@@ -596,11 +611,10 @@ justify-content: center;
   display: flex;
   justify-content: center;
   padding: 1em 0;
-
 }
 
 .download-coupon {
-  background-color: #4F3084;
+  background-color: #4f3084;
   text-align: center;
   width: 100%;
   padding: 1em 0.5em;
@@ -609,18 +623,16 @@ justify-content: center;
 
 .download-buttons button {
   border-radius: 100px;
-  color: #4F3084;
-  background-color: #F9B61F !important;
+  color: #4f3084;
+  background-color: #f9b61f !important;
   margin-top: 1em;
   text-transform: none;
   font-family: rota-bold;
 }
 
-
 .download-buttons .mdc-touch-target-wrapper button i {
-  color: #4F3084;
+  color: #4f3084;
 }
-
 
 .coupon-text .mdc-touch-target-wrapper button {
   /* width: 80%; */
@@ -628,11 +640,10 @@ justify-content: center;
   border-radius: 100px;
   text-decoration: underline;
 
-  color: #4F3084;
-  background-color: #F9B61F !important;
+  color: #4f3084;
+  background-color: #f9b61f !important;
   margin-top: 1em;
 }
-
 
 /* ---------Confetti------- */
 #last-screen canvas {
@@ -644,10 +655,10 @@ justify-content: center;
 
 /* Animation Classes */
 
-
 .slide-in-bottom {
-  -webkit-animation: slide-in-bottom 1s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
-  animation: slide-in-bottom 1s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+  -webkit-animation: slide-in-bottom 1s cubic-bezier(0.25, 0.46, 0.45, 0.94)
+    both;
+  animation: slide-in-bottom 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
 }
 
 .slide-top-1 {
@@ -656,8 +667,10 @@ justify-content: center;
 }
 
 .shake-horizontal {
-  -webkit-animation: shake-horizontal 1.4s 3s cubic-bezier(0.455, 0.030, 0.515, 0.955) both;
-  animation: shake-horizontal 1.4s 3s cubic-bezier(0.455, 0.030, 0.515, 0.955) both;
+  -webkit-animation: shake-horizontal 1.4s 3s
+    cubic-bezier(0.455, 0.03, 0.515, 0.955) both;
+  animation: shake-horizontal 1.4s 3s cubic-bezier(0.455, 0.03, 0.515, 0.955)
+    both;
 }
 
 /* -----------Animations---------- */
@@ -690,7 +703,6 @@ justify-content: center;
     transform: translate(-50%, -5%);
   }
 }
-
 
 /**
 * ----------------------------------------
@@ -725,14 +737,12 @@ justify-content: center;
   }
 }
 
-
 /**
 * ----------------------------------------
 * animation shake-horizontal
 * ----------------------------------------
 */
 @-webkit-keyframes shake-horizontal {
-
   0%,
   100% {
     -webkit-transform: translateX(0);
@@ -766,7 +776,6 @@ justify-content: center;
 }
 
 @keyframes shake-horizontal {
-
   0%,
   100% {
     -webkit-transform: translateX(0);

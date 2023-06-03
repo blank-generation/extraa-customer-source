@@ -9,7 +9,7 @@ import OtpInput from "react18-otp-input";
 import PageNotFound from "../components/PageNotFound";
 import { useSelector, useDispatch } from "react-redux";
 import { Fade } from "@mui/material";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { decremented, incremented } from "../store/store";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button, CircularProgress, Stack } from "@mui/material";
@@ -18,7 +18,7 @@ import InputAdornment from "@mui/material/InputAdornment";
 import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
 import { useApolloClient } from "@apollo/client";
 import axios from "axios";
-// import { useCookies } from 'react-cookie'
+
 import BottomCoupon from "../components/BottomCoupon";
 import "./Feedback.css";
 import ComeBackLater from "../components/ComeBackLater";
@@ -26,15 +26,17 @@ import Countdown from "react-countdown";
 
 import GetQRForm from "../queries/GetFormQuestions";
 import UserOtpActivity from "../mutations/UserOtpRequestActivity";
+import getUserFeedbackTimes from "../queries/GetUserSubmitTimes";
 import { useQuery } from "@apollo/client";
 
-let qAndA = [];
-function Feedback() {
+// let qAndA = [];
+function SmFeedback() {
   //.................... Normal JS ........................\\
   const [couponCooldown, SetCouponCooldown] = useState(false);
   const [dataLoaded, SetDataLoaded] = useState(false);
   const [fetchError, SetFetchError] = useState(false);
   const [questions, SetQuestions] = useState([]);
+  const [qAndA, SetqAndA] = useState([]);
   const [apiResponse, SetApiResponse] = useState({});
   const [brandLogo, SetBrandLogo] = useState("");
   const [brandName, SetBrandName] = useState("");
@@ -47,8 +49,15 @@ function Feedback() {
   const [errMsg, SetErrMsg] = useState("");
   const [otpLoading, SetOtpLoading] = useState(false);
   const [otpError, SetOtpError] = useState(false);
+  const [merchantIndustry, SetMerchantIndustry] = useState(0);
+  const [userDoneThis, setUserDoneThis] = useState({});
+  const [userComeBackLater, setUserComeBackLater] = useState(false);
+  const [randomCoupons, setRandomCoupons] = useState(0);
+  const [spaceLocation, setSpaceLocation] = useState({});
+
   const pageIndex = useSelector((state) => state.pageIndex);
 
+  const client = useApolloClient();
   // const commonQuestion = "Rate your overall experience";
   // const [rating, setRating] = useState(0);
   // const [cookies, setCookie] = useCookies(['extraaUserID', 'couponLock']);
@@ -88,22 +97,25 @@ function Feedback() {
 
   let pathURL = process.env.REACT_APP_ENDPOINT;
 
-  function responseToQuestion(apiResponse, merchant) {
-    // console.log(apiResponse);
-    SetBrandLogo(merchant.logo);
+  function responseToQuestion(apiResponse, merchant, qrLogo) {
+    console.log(apiResponse);
+    if (qrLogo) {
+      SetBrandLogo(qrLogo);
+    } else {
+      SetBrandLogo(merchant.logo);
+    }
+    SetMerchantIndustry(merchant.industry || 0);
     SetBrandName(merchant.name);
     let qs = [];
     apiResponse.forEach((qObj) => {
       let q = qObj.question.label;
       let type = qObj.question.type;
       let qOptions = [];
-      console.log(qObj.question.type);
       if (qObj.question.question_options.length > 0) {
         qObj.question.question_options.forEach((aObj) => {
           qOptions.push(aObj.option.label);
         });
       } else if (qObj.question.type === "SCALE5") {
-        console.log(qObj.question);
         for (let i = 1; i < 6; i++) {
           qOptions.push(i.toString());
         }
@@ -111,14 +123,30 @@ function Feedback() {
 
       qs.push({ label: q, type: type, options: qOptions });
     });
-    if (qAndA === []) {
+    let qa = qAndA;
+    if (qa === []) {
       for (let i = 0; i < apiResponse.length; i++) {
         answers.push("");
-        qAndA.push("");
+        qa.push("");
       }
     }
+    SetqAndA([...qa]);
     // console.log(answers);
     SetQuestions(qs);
+  }
+
+  async function AsyncGetUserFeedbackTimes() {
+    const resp = await getUserFeedbackTimes(
+      client,
+      {
+        qrId: data.qr[0].id,
+        userId: localStorage.getItem("user_id"),
+        lastDate: new Date().toISOString().slice(0, 10),
+      },
+      localStorage.getItem("token")
+    );
+    // console.log(resp);
+    setUserDoneThis(resp);
   }
 
   function setInitalHeaders() {
@@ -144,6 +172,12 @@ function Feedback() {
 
   useEffect(() => {
     if (data) {
+      setRandomCoupons(data.qr[0].dist_coupon_amount);
+      setSpaceLocation(data.qr[0].spaces_qrs[0].space.location);
+
+      // console.log(data.qr[0].dist_coupon_amount, "coupons AMount");
+      // console.log(data.qr[0].spaces_qrs[0].space.location, "space Location");
+
       // console.log(data.qr[0].qr_forms_accounts[0].form.form_questions);
       if (data.qr.length > 0) {
         responseToQuestion(
@@ -153,10 +187,14 @@ function Feedback() {
             : {
                 name: "Extraa",
                 logo: "../assets/extraa_logo.png",
-              }
+              },
+          data.qr[0].logo && data.qr[0].logo
         );
 
         SetDataLoaded(true);
+        if (userLogged > 0) {
+          AsyncGetUserFeedbackTimes();
+        }
       }
     }
   }, [data, loading, error]);
@@ -166,13 +204,21 @@ function Feedback() {
 
     if (localStorage.getItem("token")) {
       SetUserLoggedIn(1);
-      // console.log("loggedin");
     }
   }, []);
 
+  useEffect(() => {
+    if (userDoneThis.users_activity_aggregate) {
+      if (userDoneThis.users_activity_aggregate.aggregate.count > 0) {
+        console.log(userDoneThis.users_activity_aggregate.aggregate.count);
+        setUserComeBackLater(true);
+      }
+    }
+  }, [userDoneThis]);
+
   function SetAnswer(ans, qIndex) {
+    console.log(ans);
     if (ans && qIndex) {
-      // console.log(apiResponse);
       let qId =
         data.qr[0].qr_forms_accounts[0].form.form_questions[qIndex - 1].question
           .id;
@@ -181,7 +227,8 @@ function Feedback() {
           .type;
       // console.log("question type: " + qType);
       // console.log("answer: " + ans-1);
-      qAndA[qIndex - 1] = {
+      let qa = qAndA;
+      qa[qIndex - 1] = {
         question_id: qId,
         question_type: qType,
         answer: ans,
@@ -190,35 +237,12 @@ function Feedback() {
         form_id: data.qr[0].qr_forms_accounts[0].form.id,
       };
       answers[qIndex - 1] = ans;
-      console.log(qAndA);
+
+      console.log(qa);
+
+      SetqAndA([...qa]);
     }
   }
-
-  // const client = useApolloClient();
-
-  // const UpdateUserOtpActivity = useCallback(
-  //   async (user_id, qr_id) => {
-  //     try {
-  //       await client.mutate({
-  //         mutation: UserOtpActivity,
-  //         variables: {
-  //           user_id: user_id,
-  //           qr_id: qr_id,
-  //           action: "REQUESTED_OTP",
-  //         },
-  //         context: {
-  //           headers: {
-  //             "Content-Type": "application/json",
-  //
-  //           },
-  //         },
-  //       });
-  //     } catch (e) {
-  //       console.log(JSON.stringify(e));
-  //     }
-  //   },
-  //   [client]
-  // );
 
   function getOTP(phNum, qr_id, resend) {
     let headers = new Headers();
@@ -249,8 +273,10 @@ function Feedback() {
         console.log(response.data);
         SetUserId(response.data.user.id);
         SetOtpId(response.data.insert_otp.id);
+        initSubmitObj(response.data.user.id);
         // UpdateUserOtpActivity(response.data.user.id, qr_id);
-        if (response.data.user.name) {
+        if (response.data.user.name && response.data.user.gender) {
+          localStorage.setItem("gender", response.data.user.gender);
           SetNewUser(response.data.newUser);
         } else {
           SetNewUser(true);
@@ -284,9 +310,10 @@ function Feedback() {
         SetOtpLoading(false);
         console.log(response.data);
         if (response.data.status) {
-          increment();
           localStorage.setItem("token", response.data.token);
           localStorage.setItem("user_id", userId);
+
+          increment();
         } else {
           SetOtpError(true);
           SetErrMsg(response.data.message);
@@ -298,18 +325,26 @@ function Feedback() {
       });
   }
 
-  function initSubmitObj() {
+  function initSubmitObj(usr_id) {
+    let qa = qAndA;
+    if (usr_id) {
+      qa.forEach((item) => {
+        item.user_id = usr_id;
+      });
+    }
     let subObj = {
       qr_id: data.qr[0].id,
       form_id: data.qr[0].qr_forms_accounts[0].form.id,
-      user_id: localStorage.getItem("user_id"),
+      user_id: usr_id ? usr_id : localStorage.getItem("user_id"),
       merchant_id:
         data.qr[0].spaces_qrs[0].space.merchant_spaces[0].merchant.id,
-      questions_and_ans: qAndA,
+      questions_and_ans: qa,
       action: "SUBMIT_FEEDBACK",
+      location: spaceLocation,
+      randomCoupons: randomCoupons,
     };
-    SetSubmitObj(subObj);
-    console.log(subObj);
+    SetSubmitObj({ ...subObj });
+    // localStorage.setItem("sub_obj", JSON.stringify(subObj));
   }
 
   // --------------------React JS -------------------------------------------
@@ -343,15 +378,43 @@ function Feedback() {
       {dataLoaded ? (
         <div>
           {/*------------------- Header------------------- */}
-          {pageIndex < questions.length + 3 - userLogged * 2 && (
+          {pageIndex < questions.length + 3 && (
             <Header brand_name={brandName} logo={brandLogo}></Header>
           )}
           {/* ----------------- Splash ----------------------- */}
           {/* {pageIndex === 0 && couponCooldown === false && <Splash></Splash>}
           {couponCooldown && <ComeBackLater />} */}
 
+          {/* ---------------- Questions and Answers -------------------- */}
+          {pageIndex < questions.length && !userComeBackLater && (
+            <Fade in>
+              <div>
+                <Question question={questions[pageIndex].label}></Question>
+                <MCQ4
+                  options={questions[pageIndex].options}
+                  questionType={questions[pageIndex].type}
+                  SetAnswer={SetAnswer}
+                  initSubmitObj={initSubmitObj}
+                  offset={2}
+                  ans={qAndA}
+                ></MCQ4>
+              </div>
+            </Fade>
+          )}
+          {userComeBackLater && (
+            <Fade in>
+              <div>
+                <ComeBackLater
+                  msg={
+                    "Looks like you've already done this. Come back tomorrow."
+                  }
+                />
+              </div>
+            </Fade>
+          )}
+
           {/*---------------- Mobile number form ------------- */}
-          {pageIndex === 0 && userLogged <= 0 && (
+          {pageIndex === questions.length && userLogged <= 0 && (
             <Fade in>
               {/* <div>
                                 <UserForm SetUserData={setUserData}></UserForm>
@@ -436,7 +499,7 @@ function Feedback() {
             </Fade>
           )}
           {/* ----------------------- OTP -------------------- */}
-          {pageIndex === 1 && userLogged <= 0 && (
+          {pageIndex === questions.length + 1 && userLogged <= 0 && (
             <Fade in>
               {otpLoading ? (
                 <Fade in>
@@ -488,39 +551,14 @@ function Feedback() {
             </Fade>
           )}
 
-          {/* ---------------- Questions and Answers -------------------- */}
-          {pageIndex < questions.length + 2 - userLogged * 2 &&
-            pageIndex - 2 + userLogged * 2 >= 0 && (
-              <Fade in>
-                {newUser ? (
-                  /* ------------------ User Sign up -------------------- */
-                  <div>
-                    <UserForm
-                      userId={userId}
-                      SetNewUser={SetNewUser}
-                    ></UserForm>
-                  </div>
-                ) : (
-                  <div>
-                    <Question
-                      question={questions[pageIndex - 2 + userLogged * 2].label}
-                    ></Question>
-                    <MCQ4
-                      options={
-                        questions[pageIndex - 2 + userLogged * 2].options
-                      }
-                      questionType={
-                        questions[pageIndex - 2 + userLogged * 2].type
-                      }
-                      SetAnswer={SetAnswer}
-                      initSubmitObj={initSubmitObj}
-                      offset={userLogged * 2}
-                    ></MCQ4>
-                  </div>
-                )}
-              </Fade>
-            )}
-
+          {/* /* ------------------ User Sign up --------------------  */}
+          {pageIndex === questions.length + 2 - userLogged * 2 && newUser ? (
+            <div>
+              <UserForm userId={userId} SetNewUser={SetNewUser}></UserForm>
+            </div>
+          ) : (
+            <div></div>
+          )}
           {/* ------------------------- Common Question -------------------------- */}
           {/* {pageIndex === questions.length + 2 - userLogged * 2 && (
             <div>
@@ -530,26 +568,32 @@ function Feedback() {
               {userLogged > 0 && <BottomCoupon></BottomCoupon>}
             </div>
           )} */}
-
           {/* ------------------------------- Coupon ------------------------------------ */}
-          {pageIndex === questions.length + 2 - userLogged * 2 && (
+          {pageIndex ===
+            questions.length + 2 - userLogged * 2 + (newUser ? 1 : 0) && (
             <Fade in>
               <div className="coupon-screen">
-                <Coupon formData={submitObj} />
+                <Coupon
+                  formData={submitObj}
+                  gender={localStorage.getItem("gender")}
+                  industryId={merchantIndustry}
+                />
               </div>
             </Fade>
           )}
-
-          {pageIndex < questions.length + 2 - userLogged * 2 && (
-            <Footer
-              progress={progress}
-              FooterContent={
-                pageIndex < questions.length + 2 - userLogged && !couponCooldown
-              }
-              Questions={questions.length + 2 - pageIndex - userLogged * 2}
-              Counter={pageIndex > 0}
-            />
-          )}
+          {/* ---------------------- Foooter --------------------------- */}
+          {pageIndex < questions.length + 2 - userLogged * 2 &&
+            !userComeBackLater && (
+              <Footer
+                progress={progress}
+                FooterContent={
+                  pageIndex < questions.length + 2 - userLogged &&
+                  !couponCooldown
+                }
+                Questions={questions.length + 2 - pageIndex - userLogged * 2}
+                Counter={pageIndex > 0}
+              />
+            )}
         </div>
       ) : (
         <Fade in>
@@ -574,4 +618,4 @@ function Feedback() {
   );
 }
 
-export default Feedback;
+export default SmFeedback;

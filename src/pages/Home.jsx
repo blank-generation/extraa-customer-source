@@ -4,6 +4,7 @@ import {
   Box,
   LinearProgress,
   Button,
+  Fade,
   Dialog,
   DialogTitle,
   Slide,
@@ -20,12 +21,17 @@ import {
 } from "@mui/icons-material";
 
 import { CouponCard } from "../components/CouponCard";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import Confetti from "react-confetti";
-
 import { useDraggable } from "react-use-draggable-scroll";
+
+import { useQuery, useApolloClient, useLazyQuery } from "@apollo/client";
+import GetAllCoupons from "../queries/GetAllCoupons";
+import GetUserStats from "../queries/GetUserStats";
+import GetAllIndustries from "../queries/GetAllIndustries";
+import GetFilteredCoupons from "../queries/GetFilteredCoupons";
 
 export function Home() {
   const navigate = useNavigate();
@@ -41,9 +47,9 @@ export function Home() {
     },
   };
   const [userName, SetUserName] = useState("");
-  const [totalCoupons, SetTotalCoupons] = useState("");
   const [noCoupons, SetNoCoupons] = useState(false);
   const [totalFeedbacks, SetTotalFeedbacks] = useState("");
+  const [totalCoupons, SetTotalCoupons] = useState("");
   const [coupons, SetCoupons] = useState([]);
   const [industries, SetIndustries] = useState([]);
   const [selectedIndustries, SetSelectedIndustries] = useState([]);
@@ -86,7 +92,10 @@ export function Home() {
       }),
     },
   ];
+
+  const client = useApolloClient();
   //  ----------------------------------------------- API Calls -------------------------------------
+
   useEffect(() => {
     if (location.state) {
       window.history.replaceState({}, document.title);
@@ -98,92 +107,103 @@ export function Home() {
         SetMsgOpen(true);
       }
     }
-
     if (localStorage.getItem("token")) {
-      // ----------- Get User coupons
-
-      axios
-        .post(pathURL + "/user-coupon-details", "", config)
-        .then((response) => {
-          console.log(response.data.Data);
-          if (response.data.RESULT) {
-            SetTotalCoupons(response.data.Data.length);
-            localStorage.setItem("total_coupons", response.data.Data.length);
-            SetCoupons(
-              response.data.Data.sort(function (a, b) {
-                return (
-                  new Date(b.coupon_created_at) - new Date(a.coupon_created_at)
-                );
-              })
-            );
-          } else {
-            SetNoCoupons(true);
-            SetTotalCoupons(0);
-            localStorage.setItem("total_coupons", 0);
-          }
-        })
-        .catch((err) => {
-          console.log(err.request.status);
-          if (err.request.status === 401) {
-            localStorage.clear();
-            navigate("//");
-          }
-        });
-
-      // ----------- Get User feedback details
-
-      axios
-        .post(pathURL + "/user-feedback-details", "", config)
-        .then((response) => {
-          // console.log(response.data)
-          if (response.data.RESULT) {
-            SetTotalFeedbacks(response.data.Data.length);
-            localStorage.setItem("total_feedbacks", response.data.Data.length);
-          } else {
-            SetTotalFeedbacks(0);
-            localStorage.setItem("total_feedbacks", 0);
-          }
-
-          // SetCoupons(response.data.Data);
-        });
-
-      // ----------- Get User profile
-
-      axios.get(pathURL + "/get-user-profile",  config).then((response) => {
-        console.log(response.data.Data);
-        let profComp = 0;
-        if (response.data.Data.dob) {
-          profComp += 1;
-        }
-        if (response.data.Data.email_id) {
-          profComp += 1;
-        }
-        if (response.data.Data.pincode) {
-          profComp += 1;
-        }
-        SetProfileComp(profComp);
-      });
-
-      // ----------- Get all industries
-
-      axios.get(pathURL + "/get-all-industries").then((response) => {
-        // console.log(response.data['Industry List'])
-        SetIndustries(response.data["Industry List"]);
-        localStorage.setItem(
-          "all_industries",
-          JSON.stringify(response.data["Industry List"])
-        );
-      });
     } else {
-      navigate("//");
+      navigate("/");
     }
     SetUserName(localStorage.getItem("user_name"));
   }, []);
 
+  //  ---------------------------- Get Coupons -------------------------------
+  const {
+    couponLoading,
+    couponError,
+    data: couponData,
+  } = useQuery(GetAllCoupons, {
+    context: {
+      headers: {
+        "Content-Type": "application/json",
+        authorization: "Bearer " + localStorage.token,
+      },
+    },
+  });
+  //  ---------------------------- Get User Stats -------------------------------
+  const {
+    cnLoading,
+    cnError,
+    data: userStats,
+  } = useQuery(GetUserStats, {
+    context: {
+      headers: {
+        "Content-Type": "application/json",
+        authorization: "Bearer " + localStorage.token,
+      },
+    },
+  });
+  //  ---------------------------- Get All industries -------------------------------
+  const {
+    indLoading,
+    indError,
+    data: indData,
+  } = useQuery(GetAllIndustries, {
+    context: {
+      headers: {
+        "Content-Type": "application/json",
+        authorization: "Bearer " + localStorage.token,
+      },
+    },
+  });
+  //  --------------------------------  Set coupons state ----------------------------
+  useEffect(() => {
+    if (couponData) {
+      // console.log(couponData.user_coupons);
+      SetCoupons(couponData.user_coupons);
+    }
+  }, [couponLoading, couponError, couponData]);
+  //  --------------------------------  Set UserStats state ----------------------------
+  useEffect(() => {
+    if (userStats) {
+      // console.log(userStats.users[0]);
+      SetTotalCoupons(userStats.user_coupons_aggregate.aggregate.count);
+      localStorage.setItem(
+        "coupons_won",
+        userStats.user_coupons_aggregate.aggregate.count
+      );
+      localStorage.setItem("feedback_count", userStats.users[0].feedback_count);
+      SetTotalFeedbacks(userStats.users[0].feedback_count);
+      SetUserName(userStats.users[0].name);
+      localStorage.setItem("user", JSON.stringify(userStats.users[0]));
+    }
+  }, [cnLoading, cnError, userStats]);
+  //  --------------------------------  Set industries state ----------------------------
+  useEffect(() => {
+    if (indData) {
+      // console.log(indData.industries);
+      localStorage.setItem(
+        "all_industries",
+        JSON.stringify(indData.industries)
+      );
+      SetIndustries(indData.industries);
+    }
+  }, [indLoading, indError, indData]);
+
   //  ------------------------------------- Fitler by industry ----------------------------------------
 
-  const getUserCouponsbyIndustry = (ind_id, event) => {
+  // const [getFilteredCoupons, { filterLoading, data: filData }] = useLazyQuery(
+  //   GetFilteredCoupons,
+  //   {
+  //     context: {
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         authorization: "Bearer " + localStorage.token,
+  //       },
+  //     },
+  //   }
+  // );
+
+  const filterByIndustry = (ind_id, event) => {
     let sind = selectedIndustries;
+    // console.log(selectedIndustries, "selected Industries");
     if (event.target.checked) {
       sind.push(ind_id);
     } else {
@@ -192,42 +212,62 @@ export function Home() {
         sind.splice(index, 1);
       }
     }
+    // getFilteredCoupons({ variables: { ind_list: selectedIndustries } });
 
-    SetSelectedIndustries(sind);
+    SetSelectedIndustries([...sind]);
 
-    // console.log(selectedIndustries);
-
-    let indData = { industry_id: sind.join(", ") };
-
-    let indconfig = {
-      method: "post",
-      url: pathURL + "/user-coupon-details",
-      headers: {
-        Authorization: localStorage.getItem("token"),
-        "Content-Type": "application/json",
-      },
-      data: indData,
-    };
-    // let couponfd = new FormData();
-    // couponfd.append('industry_id', ind_id);
-
-    axios(indconfig).then((response) => {
-      // console.log(response.data)
-
-      if (response.data.Data) {
-        SetCoupons(
-          response.data.Data.sort(function (a, b) {
-            return (
-              new Date(b.coupon_created_at) - new Date(a.coupon_created_at)
-            );
-          })
-        );
-        SetNoCoupons(false);
-      } else {
-        SetNoCoupons(true);
-      }
-    });
+    // console.log(sind, "sind");
   };
+
+  function showCoupons(couponsObj, indlist) {
+    // console.log("renderCOupons");
+
+    if (indlist?.length > 0 && couponsObj?.length) {
+      couponsObj = couponsObj.filter((item) =>
+        indlist.includes(item.coupon.industry)
+      );
+    }
+
+    if (couponsObj.length > 0) {
+      return couponsObj.map((obj, index) => {
+        // console.log(obj.coupon);
+        return (
+          <CouponCard
+            key={obj.id}
+            coupon_id={obj.id}
+            brandName={obj.coupon.brand_name.toLowerCase()}
+            offerType={obj.coupon.offer_title}
+            offerDetails={obj.coupon.offer_subtitle}
+            code={obj.coupon_code ? obj.coupon_code : obj.coupon.coupon_code}
+            validity={obj.coupon.expiry_date}
+            brandLogo={obj.coupon.brand_logo}
+            industry_name={obj.coupon.industry_name.toLowerCase()}
+            terms={obj.coupon.terms}
+            coupon_color={obj.coupon.color}
+            dialogOpen={couponOpen === true && index === 0 ? true : false}
+            location={obj.coupon.location}
+          />
+        );
+      });
+    }
+
+    // SetNoCoupons(true);
+    return (
+      <Fade in>
+        <Stack mt={4} mb={8} alignItems="center">
+          <SentimentDissatisfied
+            sx={{ width: 100, height: 100, opacity: 0.8 }}
+            color="primary"
+          />
+          <p style={{ textAlign: "center" }}>
+            {" "}
+            Sorry, we couldn't find any coupons. <br />
+            Try clearing your filters
+          </p>
+        </Stack>
+      </Fade>
+    );
+  }
 
   return (
     <div className="home">
@@ -393,7 +433,7 @@ export function Home() {
 
       {/* -------------------------- Complete your profile -------------------------- */}
 
-      <Stack
+      {/* <Stack
         style={{ background: "#4F3084", color: "white" }}
         p={4}
         alignItems="center"
@@ -422,11 +462,11 @@ export function Home() {
         <Button
           variant="contained"
           className="y-btn"
-          onClick={() => navigate("/user-profile")}
+          onClick={() => console.log("/user-profile")}
         >
           Go to Profile
         </Button>
-      </Stack>
+      </Stack> */}
 
       {/* -------------------------- Search-------------------------- */}
 
@@ -500,7 +540,7 @@ export function Home() {
               <input
                 type="checkbox"
                 id={"inudstry" + ind.id}
-                onClick={(event) => getUserCouponsbyIndustry(ind.id, event)}
+                onClick={(event) => filterByIndustry(ind.id, event)}
               />
               <label htmlFor={"inudstry" + ind.id}>
                 <img
@@ -510,10 +550,7 @@ export function Home() {
                     marginRight: 12,
                     marginLeft: 12,
                   }}
-                  src={
-                    "https://shops.extraa.in/web/uploads/industry/" +
-                    ind.industry_logo
-                  }
+                  src={ind.logo}
                   alt=""
                 />
               </label>
@@ -527,7 +564,7 @@ export function Home() {
                   paddingLeft: 8,
                 }}
               >
-                {ind.industry_name.toLowerCase().replace("and", "&")}
+                {ind.name.toLowerCase().replace("and", "&")}
               </p>
             </div>
           ))}
@@ -565,12 +602,13 @@ export function Home() {
         justifyContent="center"
         onLoad={msgOpen || couponOpen ? scrollToCoupons : console.log("")}
       >
-        {noCoupons ? (
+        {!couponLoading && couponError && noCoupons ? (
           <Stack mt={4} mb={8} alignItems="center">
             <SentimentDissatisfied
               sx={{ width: 100, height: 100, opacity: 0.8 }}
               color="primary"
             />
+
             <p style={{ textAlign: "center" }}>
               {" "}
               Sorry, we couldn't find any coupons. <br />
@@ -588,29 +626,55 @@ export function Home() {
               flexWrap="wrap"
               sx={{ maxWidth: 1200 }}
             >
-              {coupons.map((obj, index) => (
-                <CouponCard
-                  key={obj.user_form_id}
-                  brandName={obj.brand.brand_name.toLowerCase()}
-                  offerType={obj.coupon.offer_details}
-                  offerDetails={obj.coupon.offer_subtitle}
-                  code={obj.coupon.coupon_code}
-                  validity={obj.coupon.expiry_date}
-                  brandLogo={
-                    "https://shops.extraa.in/web/uploads/retailer/" +
-                    obj.brand.brand_logo
-                  }
-                  industry_name={obj.coupon.industry_name.toLowerCase()}
-                  industry_icon={
-                    "https://shops.extraa.in/web/uploads/industry/" +
-                    obj.coupon.industry_logo
-                  }
-                  terms={obj.coupon.terms_and_conditions}
-                  coupon_color={obj.coupon.color_code}
-                  dialogOpen={couponOpen === true && index === 0 ? true : false}
-                  location={obj.coupon.location}
-                />
-              ))}
+              {/* {selectedIndustries.length <= 0
+                ? coupons.map((obj, index) => {
+                    console.log("FIlltltle");
+                    return (
+                      <CouponCard
+                        key={obj.id}
+                        brandName={obj.coupon.brand_name.toLowerCase()}
+                        offerType={obj.coupon.offer_title}
+                        offerDetails={obj.coupon.offer_subtitle}
+                        code={obj.coupon.coupon_code}
+                        validity={obj.coupon.expiry_date}
+                        brandLogo={obj.coupon.brand_logo}
+                        industry_name={obj.coupon.industry_name.toLowerCase()}
+                        industry_icon={
+                          "https://shops.extraa.in/web/uploads/industry/" +
+                          obj.coupon.industry_logo
+                        }
+                        terms={obj.coupon.terms}
+                        coupon_color={obj.coupon.color}
+                        dialogOpen={
+                          couponOpen === true && index === 0 ? true : false
+                        }
+                        location={obj.coupon.location}
+                      />
+                    );
+                  })
+                : coupons
+                    .filter((item) =>
+                      selectedIndustries.includes(item.coupon.industry)
+                    )
+                    .map((obj, index) => (
+                      <CouponCard
+                        key={obj.id}
+                        brandName={obj.coupon.brand_name.toLowerCase()}
+                        offerType={obj.coupon.offer_title}
+                        offerDetails={obj.coupon.offer_subtitle}
+                        code={obj.coupon.coupon_code}
+                        validity={obj.coupon.expiry_date}
+                        brandLogo={obj.coupon.brand_logo}
+                        industry_name={obj.coupon.industry_name.toLowerCase()}
+                        terms={obj.coupon.terms}
+                        coupon_color={obj.coupon.color}
+                        dialogOpen={
+                          couponOpen === true && index === 0 ? true : false
+                        }
+                        location={obj.coupon.location}
+                      />
+                    ))} */}
+              {showCoupons(coupons, selectedIndustries)}
             </Stack>
           </Slide>
         )}

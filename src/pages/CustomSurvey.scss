@@ -1,0 +1,51 @@
+@import url('https://fonts.googleapis.com/css2?family=Lexend&display=swap');
+
+:root {
+    --primary: #4F3084;
+}
+.csv-survey{
+    .sd-title{
+    font-family: 'Lexend', sans-serif;
+    }
+    .sd-description{
+        font-family: 'Lexend', sans-serif;
+    }
+    .sd-action-bar{
+        justify-content: center;
+    }
+   .sd-btn{
+    border-radius: 24px;
+   }
+   .sd-row{
+    border-radius: 24px;
+   }
+   .sd-element--with-frame{
+    border-radius: 12px;
+   }
+   .sd-input{
+    font-family: 'Lexend',
+        sans-serif;
+   }
+  .sd-question__header .sv-string-viewer{
+    font-family: rota-bold;
+   }
+   .sd-navigation__next-btn{
+    background-color: #4F3084;
+    color: white;
+    &:hover{
+        background-color: #4F3084;
+    }
+   }
+   .sd-navigation__complete-btn{
+    &:hover {
+            background-color: #4F3084;
+        }
+   }
+   .sd-container-modern{
+    margin-bottom: 0;
+    padding-bottom: 36px;
+   }
+   .sd-progress__bar {
+    height: 4px;
+   }
+}

@@ -1,67 +1,72 @@
 import { TextField } from "@mui/material";
-import {
-  WhatsApp,
-  AccountCircle,
-  ChevronRightRounded,
-} from "@mui/icons-material";
+import { AccountCircle, ChevronRightRounded } from "@mui/icons-material";
 import InputAdornment from "@mui/material/InputAdornment";
 import { Button } from "@mui/material";
-import { useDispatch } from "react-redux";
-import { incremented } from "../store/store";
+
 import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
-import { useState } from "react";
-import axios from "axios";
+import { useState, useCallback } from "react";
+import UserSignUp from "../mutations/UserSignUp";
+import { useApolloClient } from "@apollo/client";
 
 function UserForm(props) {
-  const dispatch = useDispatch();
-  const increment = () => {
-    setTimeout(() => dispatch(incremented()), 600);
-  };
-
+  const [dob, SetDob] = useState("");
   const [userName, SetUserName] = useState("");
   const [ageGroup, SetAgeGroup] = useState(0);
   const [gender, SetGender] = useState("MALE");
-  const pathURL = process.env.REACT_APP_ENDPOINT;
-  const config = {
-    headers: {
-      Authorization: localStorage.getItem("token"),
-    },
+
+  const handleDobChange = (event) => {
+    const db = event.target.value;
+    SetDob(db);
   };
+
   const handleNameChange = (event) => {
-    SetUserName(event.target.value);
+    const name = event.target.value;
+    SetUserName(name);
+    console.log(userName);
   };
 
-  function handleSubmit(name, age, gender) {
+  const client = useApolloClient();
+
+  const submitUserForm = useCallback(
+    async (uName, gndr, db) => {
+      try {
+        await client.mutate({
+          mutation: UserSignUp,
+          variables: {
+            id: props.userId,
+            name: uName,
+            gender: gndr,
+            age_range: db.toString(),
+          },
+          context: {
+            headers: {
+              "Content-Type": "application/json",
+              "x-hasura-admin-secret": "aseraadmin@1234",
+            },
+          },
+        });
+      } catch (e) {
+        console.log(JSON.stringify(e));
+      } finally {
+        props.SetNewUser(false);
+      }
+    },
+    [client]
+  );
+
+  function handleSubmit(userName, gender, age_range) {
+    localStorage.setItem("gender", gender);
+    submitUserForm(userName, gender, age_range);
+    // console.log(userName, gender, age_range);
     // props.SetUserData(name, num, age, gender);
-    const formData = new FormData();
-    formData.append("age_rage", age);
-    formData.append("gender", gender);
-
-    formData.append("user_name", name);
-
-    axios
-      .post(pathURL + "/set-user-profile", formData, config)
-      .then((response) => {
-        console.log(response.data);
-        // window.location.reload(false);
-        localStorage.setItem("user_name", name);
-        increment();
-      });
   }
 
   return (
-    <div className="user-details">
+    <div className="user-details" style={{ marginTop: "2em" }}>
       <ValidatorForm
-        onSubmit={() => handleSubmit(userName, ageGroup, gender)}
+        onSubmit={() => handleSubmit(userName, gender, ageGroup)}
         onError={(errors) => console.log(errors)}
       >
-        <img
-          src="./assets/extraa_logo.png"
-          alt="extraa logo"
-          height={80}
-          style={{ paddingTop: 64, paddingBottom: 32 }}
-        />
-
         <TextValidator
           variant="filled"
           label="Name"
@@ -158,7 +163,7 @@ function UserForm(props) {
                 htmlFor="age-2"
                 className="selector-item_label"
               >
-                21-40
+                21-30
               </label>
             </div>
             <div className="selecotr-item">
@@ -173,7 +178,7 @@ function UserForm(props) {
                 htmlFor="age-3"
                 className="selector-item_label"
               >
-                41-60
+                31-40
               </label>
             </div>
             <div className="selecotr-item">
@@ -188,11 +193,39 @@ function UserForm(props) {
                 htmlFor="age-4"
                 className="selector-item_label"
               >
-                60+
+                41-50
+              </label>
+            </div>
+            <div className="selecotr-item">
+              <input
+                type="radio"
+                id="age-5"
+                name="selector"
+                className="selector-item_radio"
+              />
+              <label
+                onClick={() => SetAgeGroup(4)}
+                htmlFor="age-5"
+                className="selector-item_label"
+              >
+                50+
               </label>
             </div>
           </div>
         </div>
+
+        {/* <TextValidator
+          style={{ marginTop: 36 }}
+          sx={{ background: "#fff" }}
+          label="Date of Birth"
+          type="date"
+          InputLabelProps={{
+            shrink: true,
+          }}
+          variant="filled"
+          onChange={handleDobChange}
+          required
+        /> */}
 
         <div className="terms">
           By submitting you agree to the{" "}
@@ -211,7 +244,7 @@ function UserForm(props) {
           variant="contained"
           endIcon={<ChevronRightRounded />}
         >
-          Get Coupon
+          Sign Up
         </Button>
       </ValidatorForm>
     </div>
